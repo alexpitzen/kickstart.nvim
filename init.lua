@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -154,7 +154,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 5
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -170,6 +170,12 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+vim.keymap.set('n', '<leader>n', '<cmd>bn<CR>', { desc = '[N]ext buffer' })
+vim.keymap.set('n', '<leader>p', '<cmd>bp<CR>', { desc = '[P]revious buffer' })
+
+vim.keymap.set('n', '<leader>w', '<cmd>w<CR>', { desc = 'Save' })
+
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -296,7 +302,7 @@ require('lazy').setup({
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
-      delay = 0,
+      delay = 500,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -690,6 +696,22 @@ require('lazy').setup({
             },
           },
         },
+        pylsp = {
+          plugins = {
+            black = {
+              enabled = true,
+            },
+          },
+        },
+        eslint = {},
+        html = {
+          embeddedLanguages = {
+            css = true,
+            javascript = true,
+          },
+          provideFormatter = true,
+        },
+        ts_ls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -730,7 +752,8 @@ require('lazy').setup({
 
   { -- Autoformat
     'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
+    -- event = { 'BufWritePre' },
+    event = {},
     cmd = { 'ConformInfo' },
     keys = {
       {
@@ -744,20 +767,20 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
+      -- format_on_save = function(bufnr)
+      --   -- Disable "format_on_save lsp_fallback" for languages that don't
+      --   -- have a well standardized coding style. You can add additional
+      --   -- languages here or re-enable it for the disabled ones.
+      --   local disable_filetypes = { c = true, cpp = true }
+      --   if disable_filetypes[vim.bo[bufnr].filetype] then
+      --     return nil
+      --   else
+      --     return {
+      --       timeout_ms = 500,
+      --       lsp_format = 'fallback',
+      --     }
+      --   end
+      -- end,
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
@@ -909,7 +932,20 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      require('mini.surround').setup {
+        mappings = {
+          add = 'Sa', -- Add surrounding in Normal and Visual modes
+          delete = 'Sd', -- Delete surrounding
+          find = 'Sf', -- Find surrounding (to the right)
+          find_left = 'SF', -- Find surrounding (to the left)
+          highlight = 'Sh', -- Highlight surrounding
+          replace = 'Sr', -- Replace surrounding
+          update_n_lines = 'Sn', -- Update `n_lines`
+
+          suffix_last = 'l', -- Suffix to search with "prev" method
+          suffix_next = 'n', -- Suffix to search with "next" method
+        },
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
