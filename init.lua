@@ -696,13 +696,7 @@ require('lazy').setup({
             },
           },
         },
-        pylsp = {
-          plugins = {
-            black = {
-              enabled = true,
-            },
-          },
-        },
+        pylsp = {},
         eslint = {},
         html = {
           embeddedLanguages = {
@@ -712,6 +706,7 @@ require('lazy').setup({
           provideFormatter = true,
         },
         ts_ls = {},
+        lemminx = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -730,6 +725,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'black',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -783,6 +779,7 @@ require('lazy').setup({
       -- end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        python = { 'black' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
